@@ -26,7 +26,7 @@ export const userProfile = async (req, res) => {
     const {user_id, name, phoneNo, address, email } = req.body
 
     try {
-        const saveInfo = db.query(" INSERT INTO UserProfile (user_id, name, phoneNo, address, email), VALUES ($1, $2, $3, $4, $5)", [user_id, name, phoneNo, address, email])
+        const saveInfo = db.query("INSERT INTO UserProfile (user_id, name, phoneNo, address, email), VALUES ($1, $2, $3, $4, $5)", [user_id, name, phoneNo, address, email])
 
         if (saveInfo) {
             res.status(200).json({message: "profile created", userInfo: saveInfo})

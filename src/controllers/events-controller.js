@@ -28,7 +28,7 @@ export const eventCreation = async  (req, res) => {
     const picture = req.file ? req.file.path : null
 
     try {
-        const saveInfo = db.query(" INSERT INTO eventCreation (brand_name, eventName, eventAddress, timeIn, timeOut, summary, media, price, category), VALUES ($1, $2, $3, $4, $5, $6)", [brand_name, eventName, eventAddress, timeIn, timeOut, summary, picture, price, category])
+        const saveInfo = db.query("INSERT INTO eventcreation (brand_name, eventName, eventAddress, timeIn, timeOut, summary, media, price, category), VALUES ($1, $2, $3, $4, $5, $6)", [brand_name, eventName, eventAddress, timeIn, timeOut, summary, picture, price, category])
 
         if (saveInfo) {
             res.status(200).json({message: "profile created", userInfo: saveInfo})
