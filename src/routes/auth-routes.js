@@ -6,7 +6,7 @@ import { SignUp, login, verifyCode, sendVerificationCode } from "../controllers/
 const router = express.Router()
 
 router.post("/signup", SignUp)
-router.post("login", login)
+router.post("/login", login)
 router.post("/send", sendVerificationCode)
 router.post("/verify", verifyCode)
 

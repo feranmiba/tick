@@ -17,8 +17,9 @@ app.use(bodyParser.urlencoded({extended: true}))
 
 
 app.use(cors())
-app.use("/uploads",express.static("uploads"))
-app.use(express.json({ limit: "10mb" }))
+app.use('/uploads', express.static('uploads'));
+app.use(express.json({ limit: '10mb' }));  // Increase the limit as needed
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 
 
