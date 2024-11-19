@@ -8,7 +8,7 @@ export const creatorProfile = async ( req, res) => {
 
         const { user_id, name, phoneNo, address, brandName, email } = req.body
     try {
-        const saveInfo = db.query("INSERT INTO creatorProfile (user_id, name, phoneNo, address, brandName, email), VALUES ($1, $2, $3, $4, $5)", [user_id, name, phoneNo, address, brandName, email ])
+        const saveInfo = db.query("INSERT INTO creatorprofile (user_id, name, phoneNo, address, brandName, email), VALUES ($1, $2, $3, $4, $5)", [user_id, name, phoneNo, address, brandName, email ])
 
         if (saveInfo) {
             res.status(200).json({message: "profile created", userInfo: saveInfo})
@@ -26,7 +26,7 @@ export const userProfile = async (req, res) => {
     const {user_id, name, phoneNo, address, email } = req.body
 
     try {
-        const saveInfo = db.query("INSERT INTO UserProfile (user_id, name, phoneNo, address, email), VALUES ($1, $2, $3, $4, $5)", [user_id, name, phoneNo, address, email])
+        const saveInfo = db.query("INSERT INTO userprofile (user_id, name, phoneNo, address, email), VALUES ($1, $2, $3, $4, $5)", [user_id, name, phoneNo, address, email])
 
         if (saveInfo) {
             res.status(200).json({message: "profile created", userInfo: saveInfo})

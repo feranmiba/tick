@@ -24,7 +24,7 @@ export default upload;
 
 export const eventCreation = async  (req, res) => {
 
-    const {brand_name, eventName, eventAddress, timeIn, timeOut, summary, media, price, category} = req.body
+    const {brand_name, eventName, eventAddress, timeIn, timeOut, summary,  price, category} = req.body
     const picture = req.file ? req.file.path : null
 
     try {
