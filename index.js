@@ -46,6 +46,7 @@ const options = {
   // Initialize swagger-jsdoc
   const swaggerSpec = swaggerJSDoc(options);
 
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 
 
