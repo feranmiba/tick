@@ -1,5 +1,5 @@
 import e from "express";
-import { eventCreation, uploadMiddleware } from "../controllers/events-controller.js";
+import { eventCreation, uploadMiddleware, getEvent } from "../controllers/events-controller.js";
 import multer from "multer";
 
 
@@ -70,6 +70,11 @@ const router = e.Router()
  *         description: The category or type of event (e.g., conference, concert)
  *         required: true
  *         type: string
+ *       - name: date
+ *         in: formData
+ *         description: The date of the event
+ *         required: true
+ *         type: string
  *     responses:
  *       201:
  *         description: Event successfully created
@@ -77,6 +82,58 @@ const router = e.Router()
  *         description: Invalid data provided
  */
 router.post("/event", uploadMiddleware, eventCreation)
+
+
+/**
+ * @swagger
+ * /getEvent
+ *  get:
+ *  description: Get all the event
+ *  responses:
+ *  200:
+ *  description: Successfully retrieved all the events
+ *   content:
+ *   application/json:
+ *   schema:
+ *   type: array
+ *   items:
+ *   type: object
+ *   properties:
+ *   id:
+ *    type: integer
+ *    description: The event ID
+ *    event_name:
+ *     type: string
+ *     description: The name of the event
+ *   date:
+ *    type: string
+ *    format: date
+ *     description: The date of the event
+ *   address:
+ *    type:string
+ *    description: The address of the event
+ *   timeIn:
+ *    type: string
+ *    description: The start time for the event
+ *   timeOut:
+ *     type: string
+ *     description: The end time for the event
+ *   Price:
+ *    type: string
+ *    description: The Price for the event
+ *   Category:
+ *    type: string
+ *    description: The category of the event
+ *   Summary:
+ *    type: string
+ *    description: The ssummary the event
+ *   brandName:
+ *    type: string
+ *    description: The owner of the event brand name
+ *
+ */
+
+router.get("/getEvent", getEvent )
 
 
 export default router

@@ -8,7 +8,7 @@ import { sendEmail } from "../utils/email-service.js";
 import { generateRandomCode, generateAccessToken } from "../utils/jwt-service.js";
 
 
-const saltRounds = 20
+const saltRounds = 5
 
 dotenv.config()
 
@@ -54,37 +54,56 @@ export const SignUp = async (req, res) => {
 export const login = async (req, res) => {
     const { email, password } = req.body;
 
-    console.log("signIn")
-    console.log(email, password)
+    console.log("signIn attempt for:", email);
+
     try {
+        // Check if the user exists in the user_credential table
         const usermailExist = await db.query("SELECT * FROM user_credential WHERE email = $1", [email]);
+
         if (usermailExist.rows.length > 0) {
             const user = usermailExist.rows[0];
-            bcrypt.compare(password, user.password, async (err, result) => {
-                if (err) {
-                    res.status(500).send("Internal error, please try again");
-                } else if (result) {
-                    const userData = await db.query("SELECT * FROM user_credential WHERE user_id = $1", [user.id])
-                    const profile = userData.rows[0]
-                    if(userData) {
-                        const acessToken = jwt.sign(profile, process.env.JWT_SECRET, {expiresIn: "20m"})
-                        res.status(200).json({userID: profile, accessToken: acessToken})
 
-                    }
-                } else {
-                    res.status(400).json({ message: "Incorrect password. Try again"});
+            // Compare the provided password with the stored hashed password
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+
+            if (isPasswordValid) {
+                // Fetch the user profile from the appropriate profile table(s)
+                const creatorProfile = await db.query("SELECT * FROM creatorprofile WHERE user_id = $1", [user.id]);
+                const attendeeProfile = await db.query("SELECT * FROM userprofile WHERE user_id = $1", [user.id]);
+
+                let profile = null;
+
+                // Choose the correct profile (creator or attendee)
+                if (creatorProfile.rows.length > 0) {
+                    profile = creatorProfile.rows[0];  // User is a creator
+                } else if (attendeeProfile.rows.length > 0) {
+                    profile = attendeeProfile.rows[0];  // User is an attendee
                 }
-            });
-        } else {
-            res.status(404).send("User not found")
-    console.log("signIn not succedul")
 
+                if (profile) {
+                    // Generate JWT token with user profile data
+                    const accessToken = jwt.sign(profile, process.env.JWT_SECRET, { expiresIn: "20m" });
+
+                    // Send the profile and access token as the response
+                    return res.status(200).json({ userID: profile.user_id, accessToken: accessToken });
+                } else {
+                    return res.status(404).json({ message: "User profile not found." });
+                }
+
+            } else {
+                // Password is incorrect
+                return res.status(400).json({ message: "Incorrect password. Try again." });
+            }
+        } else {
+            // User not found
+            return res.status(404).json({ message: "User not found." });
         }
+
     } catch (error) {
-        console.error(error)
-        res.status(500).send('Server error');
+        console.error("Login error:", error);
+        return res.status(500).json({ message: "Server error. Please try again later." });
     }
-}
+};
 
 
 
