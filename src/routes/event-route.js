@@ -18,7 +18,7 @@ const router = e.Router()
 
 /**
  * @swagger
- * /event:
+ * /event/event:
  *   post:
  *     description: Create a new event with details and media upload
  *     parameters:
@@ -85,7 +85,7 @@ router.post("/event", uploadMiddleware, eventCreation)
 
 /**
  * @swagger
- * /getAllEvent:
+ * /event/getAllEvent:
  *   get:
  *     description: Get all the events
  *     responses:
@@ -135,7 +135,7 @@ router.get("/getAllEvent", getAllEvent);
 
 /**
  * @swagger
- * /attendEvent:
+ * /event/attendEvent:
  *   post:
  *     summary: Allow a user to attend an event
  *     description: Adds an entry into the `user_events` table, marking that the user has attended a specific event.
@@ -192,7 +192,7 @@ router.post("/attendEvent", attendEvent)
 /**
  * @swagger
  *
- * /getAttendedEvents/{userId}:
+ * /event/getAttendedEvents/{userId}:
  *   get:
  *     summary: Get all events attended by a specific user
  *     description: Fetches a list of events attended by the user, including event details such as name, date, and time.
@@ -259,7 +259,7 @@ router.get("/getAttendedEvents", getAttendedEvents)
 
 /**
  * @swagger
- * /getEvent/{eventId}:
+ * /event/getEvent/{eventId}:
  *   get:
  *     summary: Get event details by event ID
  *     description: Fetches the details of a specific event by its ID.
