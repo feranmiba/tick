@@ -78,9 +78,9 @@ export const login = async (req, res) => {
 
                 // Choose the correct profile (creator or attendee)
                 if (creatorProfile.rows.length > 0) {
-                    profile = creatorProfile.rows[0];  // User is a creator
+                    profile = creatorProfile.rows[0];
                 } else if (attendeeProfile.rows.length > 0) {
-                    profile = attendeeProfile.rows[0];  // User is an attendee
+                    profile = attendeeProfile.rows[0];
                 }
 
                 if (profile) {
@@ -135,7 +135,7 @@ export const verifyCode = async (req, res) => {
 
     if (code === cachedDetails.code) {
         try {
-            await db.query(
+         const response = await db.query(
                 "INSERT INTO user_credential (username, email, password) VALUES ($1, $2, $3)",
                 [ cachedDetails.user, cachedDetails.email, cachedDetails.password]
             );
@@ -143,7 +143,10 @@ export const verifyCode = async (req, res) => {
             const accessToken = jwt.sign({ email: cachedDetails.email }, process.env.JWT_SECRET, { expiresIn: "20m" });
             cache.del(email);
 
+            const userId = response.rows[0].id;
+
             return res.status(200).json({ profile: {
+                user_id: userId,
                 username: cachedDetails.user,
                 email: cachedDetails.email,
             }, accessToken, message: 'Code verified and user registered successfully' });
