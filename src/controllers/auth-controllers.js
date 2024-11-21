@@ -143,7 +143,10 @@ export const verifyCode = async (req, res) => {
             const accessToken = jwt.sign({ email: cachedDetails.email }, process.env.JWT_SECRET, { expiresIn: "20m" });
             cache.del(email);
 
-            return res.status(200).json({ profile: cachedDetails, accessToken, message: 'Code verified and user registered successfully' });
+            return res.status(200).json({ profile: {
+                username: cachedDetails.user,
+                email: cachedDetails.email,
+            }, accessToken, message: 'Code verified and user registered successfully' });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: 'Server error, please try again' });
