@@ -135,10 +135,11 @@ export const verifyCode = async (req, res) => {
 
     if (code === cachedDetails.code) {
         try {
-         const response = await db.query(
-                "INSERT INTO user_credential (username, email, password) VALUES ($1, $2, $3)",
-                [ cachedDetails.username, cachedDetails.email, cachedDetails.password]
+            const response = await db.query(
+                "INSERT INTO user_credential (username, email, password) VALUES ($1, $2, $3) RETURNING id",
+                [cachedDetails.username, cachedDetails.email, cachedDetails.password]
             );
+
 
             const accessToken = jwt.sign({ email: cachedDetails.email }, process.env.JWT_SECRET, { expiresIn: "20m" });
             cache.del(email);
@@ -147,7 +148,7 @@ export const verifyCode = async (req, res) => {
 
             return res.status(200).json({ profile: {
                 user_id: userId,
-                username: cachedDetails.user,
+                username: cachedDetails.username,
                 email: cachedDetails.email,
             }, accessToken, message: 'Code verified and user registered successfully' });
         } catch (error) {
