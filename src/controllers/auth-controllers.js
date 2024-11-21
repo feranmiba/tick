@@ -13,7 +13,10 @@ const saltRounds = 12
 dotenv.config()
 
 
-const cache = new NodeCache({ stdTTL: 1000 });
+const cache = new NodeCache({ stdTTL: 300 });
+
+
+
 export const SignUp = async (req, res) => {
     const details = req.body;
 
@@ -133,7 +136,7 @@ export const verifyCode = async (req, res) => {
     if (code === cachedDetails.code) {
         try {
             await db.query(
-                "INSERT INTO user_credential (user, email, password) VALUES ($1, $2, $3)",
+                "INSERT INTO user_credential (username, email, password) VALUES ($1, $2, $3)",
                 [ cachedDetails.user, cachedDetails.email, cachedDetails.password]
             );
 
