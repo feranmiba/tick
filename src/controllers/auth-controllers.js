@@ -137,7 +137,7 @@ export const verifyCode = async (req, res) => {
         try {
          const response = await db.query(
                 "INSERT INTO user_credential (username, email, password) VALUES ($1, $2, $3)",
-                [ cachedDetails.user, cachedDetails.email, cachedDetails.password]
+                [ cachedDetails.username, cachedDetails.email, cachedDetails.password]
             );
 
             const accessToken = jwt.sign({ email: cachedDetails.email }, process.env.JWT_SECRET, { expiresIn: "20m" });
