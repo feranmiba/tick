@@ -1,44 +1,96 @@
 import db from "../db/db.js";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 
+dotenv.config();
 
+const checkIfUserExists = async (user_id, email) => {
+    const checkCreatorProfile = await db.query(
+        "SELECT * FROM creatorprofile WHERE user_id = $1 OR email = $2",
+        [user_id, email]
+    );
 
-
-export const creatorProfile = async ( req, res) => {
-
-        const { user_id, name, phoneNo, address, brandName, email } = req.body
-    try {
-        const saveInfo = db.query("INSERT INTO creatorprofile (user_id, name, phoneNo, address, brandName, email), VALUES ($1, $2, $3, $4, $5)", [user_id, name, phoneNo, address, brandName, email ])
-
-        if (saveInfo) {
-            res.status(200).json({message: "profile created", userInfo: saveInfo})
-        } else {
-            res.status(400).json({message: "Profile not created"})
-        }
-    } catch (error) {
-        console.error(error)
-        res.status(500).json({ error: "Server error"})
+    if (checkCreatorProfile.rows.length > 0) {
+        return { exists: true, table: 'creatorprofile' };
     }
-}
 
+    const checkUserProfile = await db.query(
+        "SELECT * FROM userprofiles WHERE user_id = $1 OR email = $2",
+        [user_id, email]
+    );
+
+    if (checkUserProfile.rows.length > 0) {
+        return { exists: true, table: 'userprofiles' };
+    }
+
+    return { exists: false };
+};
+
+export const creatorProfile = async (req, res) => {
+    const { user_id, name, phoneNo, address, brandName, email } = req.body;
+
+    try {
+        // First, check if the user already has a profile
+        const userExists = await checkIfUserExists(user_id, email);
+
+        if (userExists.exists) {
+            return res.status(400).json({
+                message: `User already has a profile`
+            });
+        }
+
+        // Insert the new creator profile if no existing profile is found
+        const saveInfo = await db.query(
+            "INSERT INTO creatorprofile (user_id, name, phoneno, address, brandName, email) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+            [user_id, name, phoneNo, address, brandName, email]
+        );
+
+        if (saveInfo.rows && saveInfo.rows.length > 0) {
+            const insertedCreator = saveInfo.rows[0];
+            return res.status(200).json({
+                message: "Profile created successfully",
+                userInfo: insertedCreator
+            });
+        } else {
+            return res.status(400).json({ message: "Profile not created" });
+        }
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error" });
+    }
+};
 
 export const userProfile = async (req, res) => {
-    const {user_id, name, phoneNo, address, email } = req.body
+    const { user_id, name, phoneNo, address, email } = req.body;
 
     try {
-        const saveInfo = db.query("INSERT INTO userprofile (user_id, name, phoneNo, address, email), VALUES ($1, $2, $3, $4, $5)", [user_id, name, phoneNo, address, email])
+        // First, check if the user already has a profile
+        const userExists = await checkIfUserExists(user_id, email);
 
-        if (saveInfo) {
-            res.status(200).json({message: "profile created", userInfo: saveInfo})
+        if (userExists.exists) {
+            return res.status(400).json({
+                message: `User already has a profile`
+            });
+        }
+
+        // Insert the new user profile if no existing profile is found
+        const saveInfo = await db.query(
+            "INSERT INTO userprofiles (user_id, name, phoneno, address, email) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            [user_id, name, phoneNo, address, email]
+        );
+
+        if (saveInfo.rows && saveInfo.rows.length > 0) {
+            const insertedUser = saveInfo.rows[0];
+            return res.status(200).json({
+                message: "Profile created successfully",
+                userInfo: insertedUser
+            });
         } else {
-            res.status(400).json({message: "Profile not created"})
+            return res.status(400).json({ message: "Profile not created" });
         }
 
     } catch (error) {
-        console.error(error)
-        res.status(500).json({ error: "Server error"})
+        console.error(error);
+        res.status(500).json({ error: "Server error" });
     }
-}
-
-
-dotenv.config()
+};

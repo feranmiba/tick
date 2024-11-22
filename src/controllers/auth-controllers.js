@@ -72,7 +72,7 @@ export const login = async (req, res) => {
             if (isPasswordValid) {
                 // Fetch the user profile from the appropriate profile table(s)
                 const creatorProfile = await db.query("SELECT * FROM creatorprofile WHERE user_id = $1", [user.id]);
-                const attendeeProfile = await db.query("SELECT * FROM userprofile WHERE user_id = $1", [user.id]);
+                const attendeeProfile = await db.query("SELECT * FROM userprofiles WHERE user_id = $1", [user.id]);
 
                 let profile = null;
 
