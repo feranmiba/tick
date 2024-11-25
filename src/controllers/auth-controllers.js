@@ -88,7 +88,7 @@ export const login = async (req, res) => {
                     const accessToken = jwt.sign(profile, process.env.JWT_SECRET, { expiresIn: "20m" });
 
                     // Send the profile and access token as the response
-                    return res.status(200).json({ userID: profile.user_id, accessToken: accessToken });
+                    return res.status(200).json({ userID: profile.user_id, profile: profile,  accessToken: accessToken });
                 } else {
                     return res.status(404).json({ message: "User profile not found." });
                 }
