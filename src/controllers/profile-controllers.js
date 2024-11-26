@@ -133,14 +133,14 @@ export const updateCreatorProfile = async (req, res) => {
 
     try {
         const result = await db.query(
-            `UPDATE creatorprofile 
+            `UPDATE creatorprofile
              SET name = $1, phoneno = $2, address = $3, email = $4, brandName=$5
              WHERE user_id = $6 RETURNING *`,
             [name, phoneNo, address, email, brandName, user_id]
         );
         if (result.rows.length > 0) {
             res.status(200).json({
-                message: "Profile updated successfully",
+                message: "Creator Profile updated successfully",
                 updatedUser: result.rows[0]
             });
         } else {

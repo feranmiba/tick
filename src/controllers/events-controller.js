@@ -132,6 +132,20 @@ export const getEventCreated = async (req, res) => {
 }
 
 
+export const getEventBycategory = async (req, res) => {
+    const category = req.params.category;
+    try {
+        const getEvent = await db.query("SELECT * FROM eventcreation WHERE category = $1", [ category ])
+
+        if(getEvent) {
+            res.status(200).json({event: getEvent})
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({error: "Server error"})
+    }
+}
+
 
 export const uploadMiddleware = upload.single('picture')
 

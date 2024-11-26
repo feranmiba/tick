@@ -1,5 +1,5 @@
 import e from "express";
-import { eventCreation, uploadMiddleware, getEvent, attendEvent, getAttendedEvents, getAllEvent, getEventCreated  } from "../controllers/events-controller.js";
+import { eventCreation, uploadMiddleware, getEvent, attendEvent, getAttendedEvents, getAllEvent, getEventCreated, getEventBycategory } from "../controllers/events-controller.js";
 
 const router = e.Router()
 
@@ -376,5 +376,78 @@ router.get("/getEvent", getEvent)
  router.get("/getEventCreated", getEventCreated)
 
 
+ /**
+ * @swagger
+ * /event/eventCategory/{category}:
+ *   get:
+ *     summary: Get event details by event category
+ *     description: Fetches the details of a specific event by its category.
+ *     parameters:
+ *       - in: path
+ *         name: category
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The category of the event to fetch
+ *         example: 5
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved event details
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 event:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       description: The ID of the event
+ *                       example: 5
+ *                     event_name:
+ *                       type: string
+ *                       description: The name of the event
+ *                       example: "Tech Conference"
+ *                     date:
+ *                       type: string
+ *                       format: date
+ *                       description: The date of the event
+ *                       example: "2024-12-01"
+ *                     address:
+ *                       type: string
+ *                       description: The address where the event is held
+ *                       example: "123 Tech Street, Silicon Valley"
+ *                     timeIn:
+ *                       type: string
+ *                       description: The start time of the event
+ *                       example: "09:00 AM"
+ *                     timeOut:
+ *                       type: string
+ *                       description: The end time of the event
+ *                       example: "05:00 PM"
+ *       404:
+ *         description: Event not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Event not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Server error"
+ */
+
+ router.get("/eventCategory", getEventBycategory)
 
 export default router;
