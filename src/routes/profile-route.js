@@ -101,7 +101,7 @@ router.post("/userProfiles", userProfile);
 /**
  * @swagger
  * /profile/updateuser:
- *   post:
+ *   put:
  *     description: Update a user profule by passing all the parameters again
  *     parameters:
  *       - name: user_id
@@ -145,7 +145,7 @@ router.put("/updateuser", updateUserProfile);
 /**
  * @swagger
  * /profile/updatecreator:
- *   post:
+ *   put:
  *     description: Update a creator profile
  *     parameters:
  *       - name: user_id
