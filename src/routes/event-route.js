@@ -1,18 +1,5 @@
 import e from "express";
-import { eventCreation, uploadMiddleware, getEvent, attendEvent, getAttendedEvents, getAllEvent  } from "../controllers/events-controller.js";
-import multer from "multer";
-
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, '/uploads')
-    },
-    filename: function (req, file, cb) {
-        cb(null, Date.now() + '-' + file.originalname);
-      }
-    });
-
-    const upload = multer({ storage: storage });
+import { eventCreation, uploadMiddleware, getEvent, attendEvent, getAttendedEvents, getAllEvent, getEventCreated  } from "../controllers/events-controller.js";
 
 const router = e.Router()
 
@@ -27,23 +14,23 @@ const router = e.Router()
  *         description: The name of the event's brand or organizer
  *         required: true
  *         type: string
- *       - name: eventName
+ *       - name: event_name
  *         in: formData
  *         description: The name of the event
  *         required: true
  *         type: string
- *       - name: eventAddress
+ *       - name: event_address
  *         in: formData
  *         description: The physical address where the event will take place
  *         required: true
  *         type: string
- *       - name: timeIn
+ *       - name: time_in
  *         in: formData
  *         description: The start date and time of the event
  *         required: true
  *         type: string
  *         format: date-time
- *       - name: timeOut
+ *       - name: time_out
  *         in: formData
  *         description: The end date and time of the event
  *         required: true
@@ -111,10 +98,10 @@ router.post("/event", uploadMiddleware, eventCreation)
  *                   address:
  *                     type: string
  *                     description: The address of the event
- *                   timeIn:
+ *                   time_in:
  *                     type: string
  *                     description: The start time for the event
- *                   timeOut:
+ *                   time_out:
  *                     type: string
  *                     description: The end time for the event
  *                   price:
@@ -330,6 +317,63 @@ router.get("/getAttendedEvents", getAttendedEvents)
  */
 
 router.get("/getEvent", getEvent)
+
+
+/**
+ * @swagger
+ * /event/getEventCreated:
+ *   get:
+ *     summary: Get events created by a specific brand or creator
+ *     description: Fetch events based on the brand name provided as a query parameter.
+ *     parameters:
+ *       - in: query
+ *         name: brand
+ *         description: The name of the brand to search for events
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: A list of events created by the specified brand
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   brand_name:
+ *                     type: string
+ *                   event_name:
+ *                     type: string
+ *                   event_address:
+ *                     type: string
+ *                   time_in:
+ *                     type: string
+ *                     format: date-time
+ *                   time_out:
+ *                     type: string
+ *                     format: date-time
+ *                   summary:
+ *                     type: string
+ *                   picture:
+ *                     type: string
+ *                   price:
+ *                     type: number
+ *                     format: float
+ *                   category:
+ *                     type: string
+ *                   date:
+ *                     type: string
+ *                     format: date
+ *       400:
+ *         description: No events found for the specified brand
+ *       500:
+ *         description: Internal server error
+ */
+ router.get("/getEventCreated", getEventCreated)
 
 
 

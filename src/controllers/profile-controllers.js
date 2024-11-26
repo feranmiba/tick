@@ -94,3 +94,32 @@ export const userProfile = async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 };
+
+
+export const updateUserProfile = async (req, res) => {
+    const { user_id, name, phoneNo, address, email } = req.body;
+
+    if (!user_id || !name || !phoneNo || !address || !email) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    try {
+        const result = await db.query(
+            `UPDATE users
+             SET name = $1, phoneNo = $2, address = $3, email = $4
+             WHERE user_id = $5 RETURNING *`,  
+            [name, phoneNo, address, email, user_id]
+        );
+        if (result.rows.length > 0) {
+            res.status(200).json({
+                message: "Profile updated successfully",
+                updatedUser: result.rows[0]
+            });
+        } else {
+            res.status(400).json({ message: "User not found or update failed" });
+        }
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}

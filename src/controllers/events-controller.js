@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
 // Initialize Multer with storage settings and file size limit
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 9 * 1024 * 1024 } 
+    limits: { fileSize: 9 * 1024 * 1024 }
 });
 
 export default upload;
@@ -28,10 +28,12 @@ export const eventCreation = async  (req, res) => {
     const picture = req.file ? req.file.path : null
 
     try {
-        const saveInfo = db.query("INSERT INTO eventcreation (brand_name, eventName, eventAddress, timeIn, timeOut, summary, media, price, category, date), VALUES ($1, $2, $3, $4, $5, $6, $7)", [brand_name, eventName, eventAddress, timeIn, timeOut, summary, picture, price, category, date])
-
+        const saveInfo = await db.query(
+            "INSERT INTO eventcreation (brand_name, event_name, event_address, time_in, time_out, summary, picture, price, category, date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *",
+            [brand_name, eventName, eventAddress, timeIn, timeOut, summary, picture, price, category, date]
+        );
         if (saveInfo) {
-            res.status(200).json({message: "profile created", userInfo: saveInfo})
+            res.status(200).json({message: "profile created", userInfo: saveInfo.rows})
         } else {
             res.status(400).json({message: "Profile not created"})
         }
@@ -48,7 +50,7 @@ export const getAllEvent = async (req, res) => {
         const getEvent = await db.query("SELECT * FROM eventcreation")
 
         if(getEvent) {
-            res.status(200).json({event: getEvent})
+            res.status(200).json({event: getEvent.rows})
         }
     } catch (error) {
         console.error(error)
@@ -87,11 +89,12 @@ export const getEvent = async (req, res) => {
 };
 
 export const getAttendedEvents = async (req, res) => {
-    const userId = req.params.userId;
+    const userId = req.query.userId;
 
     try {
+
         const result = await db.query(
-            `SELECT e.id, e.event_name, e.date, e.address, e.timeIn, e.timeOut
+            `SELECT e.id, e.event_name, e.date, e.event_address, e.time_in, e.time_out, e.price, e.category, e.picture
              FROM user_events ue
              JOIN eventcreation e ON ue.event_id = e.id
              WHERE ue.user_id = $1`,
@@ -109,6 +112,25 @@ export const getAttendedEvents = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+export const getEventCreated = async (req, res) => {
+    const brand_name = String(req.query.brand);
+    try {
+        console.log(brand_name)
+        const result =  await db.query(`SELECT * FROM eventcreation WHERE brand_name = $1`, [brand_name]);
+
+        if(result.rows.length > 0) {
+            res.status(200).json(result.rows)
+        } else {
+            res.status(400).json({ message: "User has not create any event" })
+        }
+
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({ error: "Internal server error" })
+    }
+}
+
 
 
 export const uploadMiddleware = upload.single('picture')
