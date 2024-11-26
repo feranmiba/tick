@@ -97,6 +97,34 @@ export const userProfile = async (req, res) => {
 
 
 export const updateUserProfile = async (req, res) => {
+    const { user_id, name, phoneNo, address, brandName, email } = req.body;
+
+    if (!user_id || !name || !phoneNo || !address || !email || !brandName ) {
+        return res.status(400).json({ message: "All fields are required" });
+    }
+
+    try {
+        const result = await db.query(
+            `UPDATE userprofiles
+             SET name = $1, phoneno = $2, address = $3, email = $4
+             WHERE user_id = $5 RETURNING *`,
+            [name, phoneNo, address, email, user_id]
+        );
+        if (result.rows.length > 0) {
+            res.status(200).json({
+                message: "Profile updated successfully",
+                updatedUser: result.rows[0]
+            });
+        } else {
+            res.status(400).json({ message: "User not found or update failed" });
+        }
+    } catch (error) {
+        console.error("Error updating user profile:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export const updateCreatorProfile = async (req, res) => {
     const { user_id, name, phoneNo, address, email } = req.body;
 
     if (!user_id || !name || !phoneNo || !address || !email) {
@@ -105,10 +133,10 @@ export const updateUserProfile = async (req, res) => {
 
     try {
         const result = await db.query(
-            `UPDATE users
-             SET name = $1, phoneNo = $2, address = $3, email = $4
-             WHERE user_id = $5 RETURNING *`,  
-            [name, phoneNo, address, email, user_id]
+            `UPDATE creatorprofile 
+             SET name = $1, phoneno = $2, address = $3, email = $4, brandName=$5
+             WHERE user_id = $6 RETURNING *`,
+            [name, phoneNo, address, email, brandName, user_id]
         );
         if (result.rows.length > 0) {
             res.status(200).json({
