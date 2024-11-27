@@ -38,10 +38,10 @@ export const SignUp = async (req, res) => {
 
         // Generate a verification code
         const code = generateRandomCode();
-        const text= `Your verification code is ${code}. It expires in 5 minutes. If you didn't request this code, please ignore it.`
+        const text= `<p>  Your verification code is ${code}. It expires in 5 minutes. If you didn't request this code, please ignore it.</p>`
 
         // Send the verification code to the user's email
-        await sendEmail(details.email, text);
+        await sendEmail(details.email, text, "THE OWL INITIATORS");
 
         // Store the user's details (hashed password and code) in cache
         cache.set(details.email, { ...details, password: hashedPassword, code });

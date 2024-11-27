@@ -1,6 +1,7 @@
 import db from "../db/db.js";
 import dotenv from "dotenv";
 import multer from "multer";
+import { sendEmail } from "../utils/email-service.js";
 
 
 const storage = multer.diskStorage({
@@ -72,22 +73,89 @@ export const getEvent = async (req, res) => {
     }
 }
 
- export const attendEvent = async (req, res) => {
-    const { userId, eventId } = req.body;
+export const attendEvent = async (req, res) => {
+    const { userId, eventId, email, qrcodeURL, token } = req.body;
 
     try {
-
         const result = await db.query(
-            "INSERT INTO user_events (user_id, event_id) VALUES ($1, $2)",
-            [userId, eventId]
+            "INSERT INTO user_events (user_id, event_id, email, qrcode_url, token) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            [userId, eventId, email, qrcodeURL, token]
         );
 
-        res.status(200).json({ message: "Event attended successfully" });
+        // Make sure result.rows contains at least one row (i.e., check if the insert was successful)
+        if (result.rows.length > 0) {
+            const userId = result.rows[0].user_id;
+            const eventID = result.rows[0].event_id;
+            const qrcode_url = result.rows[0].qrcode_url;
+            const eventToken = result.rows[0].token;
+            const userEmail = result.rows[0].email;
+
+            const userNameResult = await db.query("SELECT name FROM userprofiles WHERE user_id = $1", [userId]);
+            const eventResult = await db.query("SELECT event_name, picture FROM eventcreation WHERE id = $1", [eventID]);
+
+            if (userNameResult.rows.length > 0 && eventResult.rows.length > 0) {
+                const userName = userNameResult.rows[0].name;
+                const eventName = eventResult.rows[0].event_name;
+                const eventPic = eventResult.rows[0].picture;
+
+                console.log("User Name: ", userName);
+                console.log("Event Name: ", eventName);
+
+                // Prepare the email content
+                const text = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Event Payment Success</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; color: #333; margin: 0; padding: 0; }
+                        h1 { color: #4CAF50; }
+                        img { width: 300px; }
+                        ul { padding-left: 20px; }
+                        li { margin: 5px 0; }
+                    </style>
+                </head>
+                <body style="font-family: Arial, sans-serif; color: #333; margin: 0; padding: 0;">
+                    <p>Hello ${userName},</p>
+                    <p>You have successfully paid for the event: <strong>${eventName}</strong>.</p>
+                    <div>
+                        <img src="${eventPic}" alt="${eventName} Picture" style="width: 300px;"/>
+                    </div>
+                    <ul>
+                        <li>Your Token for the event: ${eventToken}</li>
+                        <li>Your QR code for the event: <a href="${qrcode_url}" style="color: #1a73e8;">${qrcode_url}</a></li>
+                    </ul>
+                    <div>
+                        Thanks for choosing Owl event website.
+                        <h1>Enjoy your event!</h1>
+                    </div>
+                </body>
+                </html>
+                `;
+
+                const subject = "THE OWL INITIATORS: Payment Successful";
+
+                // Send the email asynchronously
+                await sendEmail(userEmail, text, subject);
+
+                // Send the response only after the email has been sent
+                return res.status(200).json({ message: "Event attended successfully" });
+            } else {
+                // If user or event not found in database
+                return res.status(404).json({ error: "User or Event not found" });
+            }
+        } else {
+            // If the insert into user_events fails
+            return res.status(400).json({ error: "Failed to attend event" });
+        }
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Internal server error" });
+        console.error("Error attending event:", error);
+        // Send a generic error response if something goes wrong
+        return res.status(500).json({ error: "Internal server error" });
     }
 };
+
 
 export const getAttendedEvents = async (req, res) => {
     const userId = req.query.userId;
