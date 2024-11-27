@@ -24,13 +24,13 @@ export default upload;
 
 export const eventCreation = async  (req, res) => {
 
-    const {brand_name, eventName, eventAddress, timeIn, timeOut, summary,  price, category, date} = req.body
+    const {brand_name, eventName, eventAddress, timeIn, timeOut, summary,  price, category, date, account_name, account_number, bank} = req.body
     const picture = req.file ? req.file.path : null
 
     try {
         const saveInfo = await db.query(
-            "INSERT INTO eventcreation (brand_name, event_name, event_address, time_in, time_out, summary, picture, price, category, date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *",
-            [brand_name, eventName, eventAddress, timeIn, timeOut, summary, picture, price, category, date]
+            "INSERT INTO eventcreation (brand_name, event_name, event_address, time_in, time_out, summary, picture, price, category, date, account_name, account_number, bank) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *",
+            [brand_name, eventName, eventAddress, timeIn, timeOut, summary, picture, price, category, date, account_name, account_number, bank]
         );
         if (saveInfo) {
             res.status(200).json({message: "profile created", userInfo: saveInfo.rows})
@@ -58,12 +58,13 @@ export const getAllEvent = async (req, res) => {
     }
 }
 export const getEvent = async (req, res) => {
-    const eventId = req.params.eventId;
+    const eventId = req.query.eventId;
     try {
         const getEvent = await db.query("SELECT * FROM eventcreation WHERE id = $1", [ eventId ])
 
         if(getEvent) {
-            res.status(200).json({event: getEvent})
+            res.status(200).json({event: getEvent.rows})
+            console.log(getEvent)
         }
     } catch (error) {
         console.error(error)

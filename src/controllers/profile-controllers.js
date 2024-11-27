@@ -97,9 +97,9 @@ export const userProfile = async (req, res) => {
 
 
 export const updateUserProfile = async (req, res) => {
-    const { user_id, name, phoneNo, address, brandName, email } = req.body;
+    const { user_id, name, phoneNo, address, email } = req.body;
 
-    if (!user_id || !name || !phoneNo || !address || !email || !brandName ) {
+    if (!user_id || !name || !phoneNo || !address || !email ) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -125,9 +125,9 @@ export const updateUserProfile = async (req, res) => {
 }
 
 export const updateCreatorProfile = async (req, res) => {
-    const { user_id, name, phoneNo, address, email } = req.body;
+    const { user_id, name, phoneNo, address, brandName, email } = req.body;
 
-    if (!user_id || !name || !phoneNo || !address || !email) {
+    if (!user_id || !name || !phoneNo || !address || !email || !brandName ) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -144,7 +144,7 @@ export const updateCreatorProfile = async (req, res) => {
                 updatedUser: result.rows[0]
             });
         } else {
-            res.status(400).json({ message: "User not found or update failed" });
+            res.status(400).json({ message: "Creator profile not found or update failed" });
         }
     } catch (error) {
         console.error("Error updating user profile:", error);

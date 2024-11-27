@@ -3,7 +3,7 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-export const sendEmail = async (email, code) => {
+export const sendEmail = async (email, text) => {
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -16,7 +16,7 @@ export const sendEmail = async (email, code) => {
         from: process.env.EMAIL_USER,
         to: email,
         subject: 'THE OWL INITIATORS',
-        text: `Your verification code is ${code}. It expires in 5 minutes. If you didn't request this code, please ignore it.`,
+        text: `${text}`
     };
 
     try {

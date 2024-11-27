@@ -38,9 +38,10 @@ export const SignUp = async (req, res) => {
 
         // Generate a verification code
         const code = generateRandomCode();
+        const text= `Your verification code is ${code}. It expires in 5 minutes. If you didn't request this code, please ignore it.`
 
         // Send the verification code to the user's email
-        await sendEmail(details.email, code);
+        await sendEmail(details.email, text);
 
         // Store the user's details (hashed password and code) in cache
         cache.set(details.email, { ...details, password: hashedPassword, code });
