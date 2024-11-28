@@ -1,5 +1,6 @@
 import express from "express";
-import { SignUp, login, verifyCode, sendVerificationCode } from "../controllers/auth-controllers.js";
+import { SignUp, login, verifyCode,
+sendVerificationCode, resetPassword } from "../controllers/auth-controllers.js";
 
 const router = express.Router();
 
@@ -106,5 +107,33 @@ router.post("/send", sendVerificationCode);
  *         description: Invalid verification code
  */
 router.post("/verify", verifyCode);
+
+
+/**
+ * @swagger
+ * /auth/resetpassword:
+ * put:
+ * description: Reset user password
+ * parameters :
+ *  - name:  userId, newPassword
+ *    in: body
+ *     description: The current user id
+ *     required: true
+ *     schema :
+ *        type: string
+ *  - name: newPassword
+ *    in: body
+ *     description: The new password
+ *     required: true
+ *     schema :
+ *     type: string
+ *    responses:
+ *       200:
+ *         description: Successfully updated password
+ *       400:
+ *         description: unable to update password
+ *
+ */
+router.put("/resetpassword", resetPassword)
 
 export default router;

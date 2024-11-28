@@ -156,6 +156,53 @@ export const attendEvent = async (req, res) => {
     }
 };
 
+export const deleteTicket = async (req, res) => {
+    const { token } = req.body;
+
+    try {
+        const deleteToken = await db.query("DELETE FROM user_event WHERE token = $1", [ token ])
+
+        res.status(200).json({
+            message: "Token deleted successfully"
+        })
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error. Please try again Later"
+        })
+    }
+
+}
+
+export const verifyToken = async (req, res) => {
+    const { token } = req.body;
+
+    try {
+        const search = await db.query("SELECT * FROM user_events WHERE token = $1", [ token ])
+        if (search.rows) {
+            const user_id = search.rows[0].user_id
+            const event_id = search.rows[0].event_id
+
+            //SEARCH FOR THE USER DETAILS AND EVENT DETAILS USING THE EVENT ID AND USER ID
+            const user = await db.query("SELECT * FROM userprofiles WHERE user_id = $1", [user_id]);
+           const eventDetails =  await db.query("SELECT * FROM eventcreation WHERE id = $1", [event_id]);
+
+           res.status(200).json({
+            message: "Token Verified successfully",
+            userProfile : user.rows[0],
+            eventDetaild: eventDetails.rows[0]
+           })
+        } else {
+            res.status(400).json({
+                message: "Token is not valid"
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server error. Please try again later"
+        })
+    }
+}
+
 
 export const getAttendedEvents = async (req, res) => {
     const userId = req.query.userId;

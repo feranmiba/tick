@@ -1,5 +1,9 @@
 import e from "express";
-import { eventCreation, uploadMiddleware, getEvent, attendEvent, getAttendedEvents, getAllEvent, getEventCreated, getEventBycategory } from "../controllers/events-controller.js";
+import { eventCreation, uploadMiddleware,
+getEvent, attendEvent, getAttendedEvents,
+getAllEvent, getEventCreated, getEventBycategory,
+deleteTicket, verifyToken
+} from "../controllers/events-controller.js";
 
 const router = e.Router()
 
@@ -141,6 +145,18 @@ router.get("/getAllEvent", getAllEvent);
  *                 type: integer
  *                 description: The ID of the event that the user is attending
  *                 example: 5
+ *                 email:
+ *                  type: string
+ *                  description: The user email
+ *                  example: johndoe@gmail.com
+ *                qrcodeURL:
+ *                   type: string
+ *                    description: A Link to their generated qr code,
+ *                     example: https://mypartyqrcode.com
+ *                token:
+ *                   type: sting
+ *                   description:  A unique token code for the user attending the event
+ *                   example: 45321
  *     responses:
  *       200:
  *         description: Event attended successfully
@@ -449,5 +465,124 @@ router.get("/getEvent", getEvent)
  */
 
  router.get("/eventCategory", getEventBycategory)
+
+ /**
+ * post:
+ *    summary: Verify a token and return associated user and event details
+ *    description: Verifies the provided token and retrieves associated user and event details.
+ *    operationId: verifyToken
+ *    requestBody:
+ *      required: true
+ *        application/json:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              token:
+ *                type: string
+ *                example: "a_random_token_value"
+ *    responses:
+ *      '200':
+ *        description: Token verified successfully and details returned
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: Token Verified successfully
+ *                userProfile:
+ *                  type: object
+ *                  properties:
+ *                    user_id:
+ *                      type: integer
+ *                      example: 123
+ *                    name:
+ *                      type: string
+ *                      example: "John Doe"
+ *                eventDetails:
+ *                  type: object
+ *                  properties:
+ *                    id:
+ *                      type: integer
+ *                      example: 456
+ *                    event_name:
+ *                      type: string
+ *                      example: "Music Concert"
+ *      '400':
+ *        description: Invalid token
+ *        content:
+ *          application/json:
+ *          schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: Token is not valid
+ *      '500':
+ *        description: Internal server error
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *   example: Internal server error. Please try again later
+  */
+
+
+ router.post("/verifytoken", verifyToken)
+
+
+/**
+ * @swagger
+ * /event/delete-ticket:
+ *  delete:
+ *      summary: Delete a ticket by token
+ *      description: Deletes a ticket from the `user_event` table using a provided token.
+  *     operationId: deleteTicket
+ *      parameters:
+ *        - name: token
+ *        in: body
+ *        required: true
+ *        description: The token associated with the ticket to be deleted.
+ *        schema:
+ *          type: string
+ *    responses:
+ *      '200':
+ *        description: Token deleted successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: Token deleted successfully
+ *      '404':
+ *        description: Token not found
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  example: Token not found
+ *      '500':
+ *         description: Internal server error
+ *          content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *              properties:
+ *                  message:
+ *                    type: string
+ *      example: Internal server error. Please try again later
+
+ */
+
+ router.delete("/deleteTicket", deleteTicket)
 
 export default router;
