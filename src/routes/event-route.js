@@ -467,6 +467,7 @@ router.get("/getEvent", getEvent)
  router.get("/eventCategory", getEventBycategory)
 
  /**
+  * @swagger
  * post:
  *    summary: Verify a token and return associated user and event details
  *    description: Verifies the provided token and retrieves associated user and event details.
