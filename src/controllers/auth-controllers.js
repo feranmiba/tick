@@ -160,3 +160,32 @@ export const verifyCode = async (req, res) => {
 
     res.status(400).json({ message: 'Invalid code' });
 };
+
+
+export const resetPassword = async (req, res) => {
+    const { userId, newPassword } = req.body;
+
+    if ( !userId || !newPassword ) {
+        res.status(400).json({ message: "User id and new Password are required" })
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+        const result = await db.query(
+            "UPDATE user_credential SET password = $1 WHERE id = $2 RETURNING id",
+            [hashedPassword, userId]
+        );
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(200).json({ message: "Password reset successfully" });
+
+    } catch (error) {
+        console.error("Error resetting password:", error);
+        return res.status(500).json({ message: "An error occurred while resetting the password" });
+    }
+
+}
