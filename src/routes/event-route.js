@@ -575,7 +575,7 @@ router.post("/attendEvent", attendEvent)
  /**
  * @swagger
  * /event/deleteticket:
- *   post:
+ *   delete:
  *     summary: Delete a user's event ticket by token
  *     description: This endpoint deletes the user's event ticket using the provided token and removes the entry from the database.
  *     requestBody:

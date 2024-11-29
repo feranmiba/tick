@@ -113,7 +113,7 @@ router.post("/verify", verifyCode);
 /**
  * @swagger
  * /user/resetpassword:
- *   post:
+ *   put:
  *     summary: Reset a user's password
  *     description: This endpoint allows a user to reset their password using their user ID and the new password. The password is hashed before updating in the database.
  *     requestBody:
