@@ -110,6 +110,71 @@ router.post("/verify", verifyCode);
 
 
 
+/**
+ * @swagger
+ * /user/resetpassword:
+ *   post:
+ *     summary: Reset a user's password
+ *     description: This endpoint allows a user to reset their password using their user ID and the new password. The password is hashed before updating in the database.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: integer
+ *                 description: The ID of the user whose password is being reset.
+ *                 example: 123
+ *               newPassword:
+ *                 type: string
+ *                 description: The new password for the user.
+ *                 example: "newPassword123"
+ *     responses:
+ *       200:
+ *         description: Password reset successfully.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Password reset successfully"
+ *       400:
+ *         description: Missing user ID or new password in the request body.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User id and new Password are required"
+ *       404:
+ *         description: User not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User not found"
+ *       500:
+ *         description: Internal server error. Something went wrong while processing the request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "An error occurred while resetting the password"
+ */
+
+
 router.put("/resetpassword", resetPassword)
 
 export default router;

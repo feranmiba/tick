@@ -20,8 +20,6 @@ const cache = new NodeCache({ stdTTL: 300 });
 export const SignUp = async (req, res) => {
     const details = req.body;
 
-    console.log("Start sign-up process");
-    console.log(details);
 
     try {
         // Check if the user already exists in the database
@@ -58,7 +56,6 @@ export const SignUp = async (req, res) => {
 export const login = async (req, res) => {
     const { email, password } = req.body;
 
-    console.log("signIn attempt for:", email);
 
     try {
         // Check if the user exists in the user_credential table

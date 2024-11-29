@@ -401,99 +401,226 @@ router.get("/getEvent", getEvent)
  router.get("/eventCategory", getEventBycategory)
 
 
+/**
+ * @swagger
+ * /event/attendevent:
+ *   post:
+ *     summary: Register a user for an event and send confirmation email
+ *     description: This endpoint registers a user for an event, inserts their details into the database, and sends a confirmation email with event information, token, and QR code URL.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: integer
+ *                 description: The ID of the user attending the event.
+ *                 example: 123
+ *               eventId:
+ *                 type: integer
+ *                 description: The ID of the event the user is attending.
+ *                 example: 456
+ *               email:
+ *                 type: string
+ *                 description: The email address of the user.
+ *                 example: "user@example.com"
+ *               qrcodeURL:
+ *                 type: string
+ *                 description: URL of the QR code associated with the user's event attendance.
+ *                 example: "http://example.com/qrcode.png"
+ *               token:
+ *                 type: string
+ *                 description: Unique token generated for the event.
+ *                 example: "event-token-1234"
+ *     responses:
+ *       200:
+ *         description: Successfully registered for the event and email sent.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Event attended successfully"
+ *       400:
+ *         description: Failed to register user for the event.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Failed to attend event"
+ *       404:
+ *         description: User or event not found.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "User or Event not found"
+ *       500:
+ *         description: Internal server error.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Internal server error"
+ */
+
 
 router.post("/attendEvent", attendEvent)
 
 
 /**
-swagger: "2.0"
-info:
-  description: "API for verifying a token and fetching user and event details."
-  version: "1.0.0"
-  title: "Token Verification API"
-paths:
-  /verifytoken:
-    post:
-      summary: "Verify Token and Fetch User & Event Details"
-      description: "This endpoint verifies a token and, if valid, returns the associated user profile and event details."
-      consumes:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "token"
-          description: "The token to be verified."
-          required: true
-          schema:
-            type: object
-            properties:
-              token:
-                type: string
-                example: "your-token-here"
-      responses:
-        200:
-          description: "Token verified successfully. Returns user profile and event details."
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: "Token Verified successfully"
-              userProfile:
-                type: object
-                properties:
-                  user_id:
-                    type: integer
-                    example: 123
-                  first_name:
-                    type: string
-                    example: "John"
-                  last_name:
-                    type: string
-                    example: "Doe"
-                  email:
-                    type: string
-                    example: "john.doe@example.com"
-                  # Add additional fields from your 'userprofiles' table
-              eventDetails:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                    example: 456
-                  event_name:
-                    type: string
-                    example: "Sample Event"
-                  location:
-                    type: string
-                    example: "New York"
-                  event_date:
-                    type: string
-                    format: date
-                    example: "2024-12-15"
-                  # Add additional fields from your 'eventcreation' table
-        400:
-          description: "Invalid token. Token is not valid."
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: "Token is not valid"
-        500:
-          description: "Internal server error. Something went wrong while processing the request."
-          schema:
-            type: object
-            properties:
-              message:
-                type: string
-                example: "Internal Server error. Please try again later"
-      security: []
+ * @swagger
+ * /event/verifytoken:
+ *   post:
+ *     summary: Verify Token and Fetch User & Event Details
+ *     description: This endpoint verifies a token and, if valid, returns the associated user profile and event details.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: The token to be verified.
+ *                 example: "your-token-here"
+ *     responses:
+ *       200:
+ *         description: Token verified successfully. Returns user profile and event details.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Token Verified successfully"
+ *                 userProfile:
+ *                   type: object
+ *                   properties:
+ *                     user_id:
+ *                       type: integer
+ *                       description: The ID of the user.
+ *                       example: 123
+ *                     first_name:
+ *                       type: string
+ *                       description: The first name of the user.
+ *                       example: "John"
+ *                     last_name:
+ *                       type: string
+ *                       description: The last name of the user.
+ *                       example: "Doe"
+ *                     email:
+ *                       type: string
+ *                       description: The email address of the user.
+ *                       example: "john.doe@example.com"
+ *                 eventDetails:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       description: The ID of the event.
+ *                       example: 456
+ *                     event_name:
+ *                       type: string
+ *                       description: The name of the event.
+ *                       example: "Sample Event"
+ *                     location:
+ *                       type: string
+ *                       description: The location of the event.
+ *                       example: "New York"
+ *                     event_date:
+ *                       type: string
+ *                       format: date
+ *                       description: The date the event will take place.
+ *                       example: "2024-12-15"
+ *       400:
+ *         description: Invalid token. Token is not valid.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Token is not valid"
+ *       500:
+ *         description: Internal server error. Something went wrong while processing the request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal Server error. Please try again later"
  */
  router.post("/verifytoken", verifyToken)
 
 
-
-
+ /**
+ * @swagger
+ * /event/deleteticket:
+ *   post:
+ *     summary: Delete a user's event ticket by token
+ *     description: This endpoint deletes the user's event ticket using the provided token and removes the entry from the database.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               token:
+ *                 type: string
+ *                 description: The token of the event ticket to be deleted.
+ *                 example: "your-token-here"
+ *     responses:
+ *       200:
+ *         description: Successfully deleted the event ticket.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Token deleted successfully"
+ *       400:
+ *         description: Failed to delete the ticket. Token might not exist or be invalid.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Failed to delete ticket"
+ *       500:
+ *         description: Internal server error. Something went wrong while processing the request.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error. Please try again later"
+ */
 router.delete("/deleteTicket", deleteTicket)
 
 export default router;
