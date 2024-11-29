@@ -160,7 +160,7 @@ export const deleteTicket = async (req, res) => {
     const { token } = req.body;
 
     try {
-        const deleteToken = await db.query("DELETE FROM user_event WHERE token = $1", [ token ])
+        const deleteToken = await db.query("DELETE FROM user_events WHERE token = $1", [ token ])
 
         res.status(200).json({
             message: "Token deleted successfully"

@@ -109,31 +109,7 @@ router.post("/send", sendVerificationCode);
 router.post("/verify", verifyCode);
 
 
-/**
- * @swagger
- * /auth/resetpassword:
- * put:
- * description: Reset user password
- * parameters :
- *  - name:  userId, newPassword
- *    in: body
- *     description: The current user id
- *     required: true
- *     schema :
- *        type: string
- *  - name: newPassword
- *    in: body
- *     description: The new password
- *     required: true
- *     schema :
- *     type: string
- *    responses:
- *       200:
- *         description: Successfully updated password
- *       400:
- *         description: unable to update password
- *
- */
+
 router.put("/resetpassword", resetPassword)
 
 export default router;
