@@ -74,12 +74,12 @@ export const getEvent = async (req, res) => {
 }
 
 export const attendEvent = async (req, res) => {
-    const { userId, eventId, email, qrcodeURL, token, type } = req.body;
+    const { userId, eventId, email, qrcodeURL, token, ticketType } = req.body;
 
     try {
         const result = await db.query(
             "INSERT INTO user_events (user_id, event_id, email, qrcode_url, token, type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
-            [userId, eventId, email, qrcodeURL, token, type]
+            [userId, eventId, email, qrcodeURL, token, ticketType]
         );
 
         // Make sure result.rows contains at least one row (i.e., check if the insert was successful)
@@ -116,7 +116,7 @@ export const attendEvent = async (req, res) => {
                     <p>Hello ${userName},</p>
                     <p>You have successfully paid for the event: <strong>${eventName}</strong>.</p>
                     <div>
-                        <img src="${eventPic}" alt="${eventName} Picture" style="width: 300px;"/>
+                        <img src={"https://tick-dzls.onrender.com/${eventPic}"} alt="${eventName} Picture" style="width: 300px;"/>
                     </div>
                     <ul>
                         <li>Your Token for the event: ${eventToken}</li>

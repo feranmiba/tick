@@ -52,7 +52,7 @@ const router = e.Router()
  *         type: string
  *       - name: price
  *         in: formData
- *         description: The price to attend the event
+ *         description: The regular price to attend the event
  *         required: true
  *         type: number
  *         format: float
@@ -66,6 +66,18 @@ const router = e.Router()
  *         description: The date of the event
  *         required: true
  *         type: string
+ *      - name: Vip
+ *         in: formData
+ *         description: The vip price to attend the event
+ *         required: true
+ *         type: number
+ *         format:  float
+ *      - name: vvip
+ *         in: formData
+ *         description: The VVip price to attend the event
+ *         required: true
+ *         type: number
+ *         format: float
  *     responses:
  *       201:
  *         description: Event successfully created
@@ -434,6 +446,10 @@ router.get("/getEvent", getEvent)
  *                 type: string
  *                 description: Unique token generated for the event.
  *                 example: "event-token-1234"
+ *                ticketType:
+ *                 type: string,
+ *                 description: Which type is the customer buying (regular, vvip, vip)
+ *                 example: "VVIP"
  *     responses:
  *       200:
  *         description: Successfully registered for the event and email sent.
