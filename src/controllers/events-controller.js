@@ -25,13 +25,13 @@ export default upload;
 
 export const eventCreation = async  (req, res) => {
 
-    const {brand_name, eventName, eventAddress, timeIn, timeOut, summary,  price, category, date, account_name, account_number, bank} = req.body
+    const {brand_name, eventName, eventAddress, timeIn, timeOut, summary,  price, category, date, account_name, account_number, bank, vip, vvip} = req.body
     const picture = req.file ? req.file.path : null
 
     try {
         const saveInfo = await db.query(
-            "INSERT INTO eventcreation (brand_name, event_name, event_address, time_in, time_out, summary, picture, price, category, date, account_name, account_number, bank) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13) RETURNING *",
-            [brand_name, eventName, eventAddress, timeIn, timeOut, summary, picture, price, category, date, account_name, account_number, bank]
+            "INSERT INTO eventcreation (brand_name, event_name, event_address, time_in, time_out, summary, picture, price, category, date, account_name, account_number, bank, vip_price, vvip_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *",
+            [brand_name, eventName, eventAddress, timeIn, timeOut, summary, picture, price, category, date, account_name, account_number, bank, vip, vvip]
         );
         if (saveInfo) {
             res.status(200).json({message: "profile created", userInfo: saveInfo.rows})
@@ -74,12 +74,12 @@ export const getEvent = async (req, res) => {
 }
 
 export const attendEvent = async (req, res) => {
-    const { userId, eventId, email, qrcodeURL, token } = req.body;
+    const { userId, eventId, email, qrcodeURL, token, type } = req.body;
 
     try {
         const result = await db.query(
-            "INSERT INTO user_events (user_id, event_id, email, qrcode_url, token) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-            [userId, eventId, email, qrcodeURL, token]
+            "INSERT INTO user_events (user_id, event_id, email, qrcode_url, token, type) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *",
+            [userId, eventId, email, qrcodeURL, token, type]
         );
 
         // Make sure result.rows contains at least one row (i.e., check if the insert was successful)
@@ -98,10 +98,6 @@ export const attendEvent = async (req, res) => {
                 const eventName = eventResult.rows[0].event_name;
                 const eventPic = eventResult.rows[0].picture;
 
-                console.log("User Name: ", userName);
-                console.log("Event Name: ", eventName);
-
-                // Prepare the email content
                 const text = `
                 <!DOCTYPE html>
                 <html>
@@ -136,22 +132,17 @@ export const attendEvent = async (req, res) => {
 
                 const subject = "THE OWL INITIATORS: Payment Successful";
 
-                // Send the email asynchronously
                 await sendEmail(userEmail, text, subject);
 
-                // Send the response only after the email has been sent
                 return res.status(200).json({ message: "Event attended successfully" });
             } else {
-                // If user or event not found in database
                 return res.status(404).json({ error: "User or Event not found" });
             }
         } else {
-            // If the insert into user_events fails
             return res.status(400).json({ error: "Failed to attend event" });
         }
     } catch (error) {
         console.error("Error attending event:", error);
-        // Send a generic error response if something goes wrong
         return res.status(500).json({ error: "Internal server error" });
     }
 };
@@ -160,11 +151,21 @@ export const deleteTicket = async (req, res) => {
     const { token } = req.body;
 
     try {
-        const deleteToken = await db.query("DELETE FROM user_events WHERE token = $1", [ token ])
+
+        const searchToken = await db.query("SELECT * FROM user_events WHERE token = $1", [ token ])
+
+        if (searchToken.rows.length > 0) {
+            const deleteToken = await db.query("DELETE FROM user_events WHERE token = $1", [ token ])
 
         res.status(200).json({
             message: "Token deleted successfully"
         })
+        } else {
+            res.status(400).json({
+                message: "Token not found or invalid token"
+            })
+        }
+
     } catch (error) {
         res.status(500).json({
             message: "Internal server error. Please try again Later"

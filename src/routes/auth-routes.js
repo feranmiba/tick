@@ -123,10 +123,10 @@ router.post("/verify", verifyCode);
  *           schema:
  *             type: object
  *             properties:
- *               userId:
- *                 type: integer
- *                 description: The ID of the user whose password is being reset.
- *                 example: 123
+ *               email:
+ *                 type: string
+ *                 description: The email of the user who wants to reset password.
+ *                 example: mywebsite@gmail.com
  *               newPassword:
  *                 type: string
  *                 description: The new password for the user.
