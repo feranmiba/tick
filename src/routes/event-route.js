@@ -47,7 +47,7 @@ const router = e.Router()
  *         type: string
  *       - name: picture
  *         in: formData
- *         description: A Single picture not more than 10mb
+ *         description: A single picture, not more than 10MB
  *         required: true
  *         type: string
  *       - name: price
@@ -66,15 +66,15 @@ const router = e.Router()
  *         description: The date of the event
  *         required: true
  *         type: string
- *      - name: Vip
+ *       - name: Vip
  *         in: formData
- *         description: The vip price to attend the event
+ *         description: The VIP price to attend the event
  *         required: true
  *         type: number
- *         format:  float
- *      - name: vvip
+ *         format: float
+ *       - name: vvip
  *         in: formData
- *         description: The VVip price to attend the event
+ *         description: The VVIP price to attend the event
  *         required: true
  *         type: number
  *         format: float
@@ -84,7 +84,7 @@ const router = e.Router()
  *       400:
  *         description: Invalid data provided
  */
-router.post("/event", uploadMiddleware, eventCreation)
+router.post("/event", uploadMiddleware, eventCreation);
 
 /**
  * @swagger
@@ -412,7 +412,6 @@ router.get("/getEvent", getEvent)
 
  router.get("/eventCategory", getEventBycategory)
 
-
 /**
  * @swagger
  * /event/attendevent:
@@ -446,8 +445,8 @@ router.get("/getEvent", getEvent)
  *                 type: string
  *                 description: Unique token generated for the event.
  *                 example: "event-token-1234"
- *                ticketType:
- *                 type: string,
+ *               ticketType:
+ *                 type: string
  *                 description: Which type is the customer buying (regular, vvip, vip)
  *                 example: "VVIP"
  *     responses:
@@ -492,7 +491,6 @@ router.get("/getEvent", getEvent)
  *                   type: string
  *                   example: "Internal server error"
  */
-
 
 router.post("/attendEvent", attendEvent)
 
