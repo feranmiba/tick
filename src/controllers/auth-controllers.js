@@ -127,6 +127,8 @@ export const verifyCode = async (req, res) => {
     const { email, code } = req.body;
     const cachedDetails = cache.get(email);
 
+    console.log(cachedDetails.code)
+
     if (!cachedDetails) {
         return res.status(400).json({ message: 'Invalid email or code' });
     }
@@ -155,7 +157,7 @@ export const verifyCode = async (req, res) => {
         }
 
 
-        if( cachedDetails === 'resetpassword' ) {
+        if( cachedDetails.type === 'resetpassword' ) {
                // Password reset: Update the user's password
                const result = await db.query(
                 "UPDATE user_credential SET password = $1 WHERE email = $2 RETURNING id",
@@ -175,16 +177,10 @@ export const verifyCode = async (req, res) => {
         console.error(error);
         return res.status(500).json({ error: 'Server error, please try again' });
     }
-
-
-
         }
 
 
-
-    res.status(400).json({ message: 'Invalid code' });
 };
-
 
 export const resetPassword = async (req, res) => {
     const { email, newPassword } = req.body;

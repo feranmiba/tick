@@ -1,6 +1,6 @@
 import express from "express";
 import { SignUp, login, verifyCode,
-sendVerificationCode, resetPassword } from "../controllers/auth-controllers.js";
+sendVerificationCode, resetPassword} from "../controllers/auth-controllers.js";
 
 const router = express.Router();
 
@@ -112,10 +112,10 @@ router.post("/verify", verifyCode);
 
 /**
  * @swagger
- * /user/resetpassword:
+ * /auth/resetpassword:
  *   put:
  *     summary: Reset a user's password
- *     description: This endpoint allows a user to reset their password using their user ID and the new password. The password is hashed before updating in the database.
+ *     description: This endpoint allows a user to reset their password using their user email and the new password. The password is hashed before updating in the database.
  *     requestBody:
  *       required: true
  *       content:
@@ -176,5 +176,7 @@ router.post("/verify", verifyCode);
 
 
 router.put("/resetpassword", resetPassword)
+
+
 
 export default router;

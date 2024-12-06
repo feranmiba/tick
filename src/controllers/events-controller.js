@@ -34,7 +34,7 @@ export const eventCreation = async  (req, res) => {
             [brand_name, eventName, eventAddress, timeIn, timeOut, summary, picture, price, category, date, account_name, account_number, bank, vip, vvip]
         );
         if (saveInfo) {
-            res.status(200).json({message: "profile created", userInfo: saveInfo.rows})
+            res.status(200).json({message: "Event Created", userInfo: saveInfo.rows})
         } else {
             res.status(400).json({message: "Profile not created"})
         }
