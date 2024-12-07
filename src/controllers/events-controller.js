@@ -36,7 +36,7 @@ export const eventCreation = async  (req, res) => {
         if (saveInfo) {
             res.status(200).json({message: "Event Created", userInfo: saveInfo.rows})
         } else {
-            res.status(400).json({message: "Profile not created"})
+            res.status(400).json({message: "Event not created"})
         }
 
     } catch (error) {
@@ -190,7 +190,7 @@ export const verifyToken = async (req, res) => {
            res.status(200).json({
             message: "Token Verified successfully",
             userProfile : user.rows[0],
-            eventDetaild: eventDetails.rows[0]
+            eventDetails: eventDetails.rows[0]
            })
         } else {
             res.status(400).json({
