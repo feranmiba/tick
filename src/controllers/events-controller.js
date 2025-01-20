@@ -45,6 +45,30 @@ export const eventCreation = async  (req, res) => {
     }
 }
 
+export const DeleteEvent = async (req, res) => {
+    const eventId = req.query.eventId; // Ensure eventId is passed in query parameters
+    try {
+        // Check if the event exists
+        const getEvent = await db.query("SELECT * FROM eventcreation WHERE id = $1", [eventId]);
+
+        if (getEvent.rowCount === 0) { // Use rowCount to check if the event exists
+            return res.status(404).json({ message: "Event not available" });
+        }
+
+        // Delete the event
+        const deleteEvent = await db.query("DELETE FROM eventcreation WHERE id = $1", [eventId]);
+        if (deleteEvent.rowCount > 0) { // Check if rows were affected
+            return res.status(200).json({ message: "Event Deleted Successfully" });
+        } else {
+            return res.status(400).json({ message: "Failed to delete the event" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error" });
+    }
+};
+
+
 
 export const getAllEvent = async (req, res) => {
     try {
