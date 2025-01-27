@@ -140,7 +140,7 @@ export const attendEvent = async (req, res) => {
                     <p>Hello ${userName},</p>
                     <p>You have successfully paid for the event: <strong>${eventName}</strong>.</p>
                     <div>
-                        <img src={"https://tick-dzls.onrender.com/${eventPic}"} alt="${eventName} Picture" style="width: 300px;"/>
+                           <img src="https://app.swiftjobs.com.ng/${eventPic}" alt="${eventName} Picture" style="width: 300px;"/>
                     </div>
                     <ul>
                         <li>Your Token for the event: ${eventToken}</li>
