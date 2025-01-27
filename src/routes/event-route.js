@@ -2,7 +2,7 @@ import e from "express";
 import { eventCreation, uploadMiddleware,
 getEvent, attendEvent, getAttendedEvents,
 getAllEvent, getEventCreated, getEventBycategory,
-deleteTicket, verifyToken, DeleteEvent
+deleteTicket, verifyToken, DeleteEvent, getAttendee
 } from "../controllers/events-controller.js";
 
 const router = e.Router()
@@ -640,5 +640,9 @@ router.post("/attendEvent", attendEvent)
  *                   example: "Internal server error. Please try again later"
  */
 router.delete("/deleteTicket", deleteTicket)
+
+// getAttendee
+
+router.get("/getAttendee", getAttendee)
 
 export default router;

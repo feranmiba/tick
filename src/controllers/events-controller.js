@@ -25,13 +25,13 @@ export default upload;
 
 export const eventCreation = async  (req, res) => {
 
-    const {brand_name, eventName, eventAddress, timeIn, timeOut, summary,  price, category, date, account_name, account_number, bank, vip, vvip} = req.body
+    const {brand_name, eventName, eventAddress, timeIn, timeOut, summary,  price, category, date, account_name, account_number, bank, vip, vvip, table_price, vvvip_price} = req.body
     const picture = req.file ? req.file.path : null
 
     try {
         const saveInfo = await db.query(
-            "INSERT INTO eventcreation (brand_name, event_name, event_address, time_in, time_out, summary, picture, price, category, date, account_name, account_number, bank, vip_price, vvip_price) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *",
-            [brand_name, eventName, eventAddress, timeIn, timeOut, summary, picture, price, category, date, account_name, account_number, bank, vip, vvip]
+            "INSERT INTO eventcreation (brand_name, event_name, event_address, time_in, time_out, summary, picture, price, category, date, account_name, account_number, bank, vip_price, vvip_price, table_price, vvvip) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING *",
+            [brand_name, eventName, eventAddress, timeIn, timeOut, summary, picture, price, category, date, account_name, account_number, bank, vip, vvip, table_price, vvvip_price]
         );
         if (saveInfo) {
             res.status(200).json({message: "Event Created", userInfo: saveInfo.rows})
@@ -280,6 +280,21 @@ export const getEventBycategory = async (req, res) => {
 
         if(getEvent) {
             res.status(200).json({event: getEvent})
+        }
+    } catch (error) {
+        console.error(error)
+        res.status(500).json({error: "Server error"})
+    }
+}
+
+
+export const getAttendee = async (req, res) => { 
+    const{ eventId }= req.body
+    try {
+        const getAttendee = await db.query("SELECT * FROM user_events WHERE event_id = $1", [ eventId ])
+
+        if(getAttendee) {
+            res.status(200).json({event: getAttendee.rows})
         }
     } catch (error) {
         console.error(error)
