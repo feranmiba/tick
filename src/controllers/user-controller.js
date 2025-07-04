@@ -6,10 +6,8 @@ dotenv.config();
 
 export const getInterest = async (req, res) => {
     try {
-        // Retrieve all interests from the userInterest object
         const interests = Object.values(userInterest);
 
-        // Check if interests are available
         if (interests.length > 0) {
             return res.status(200).json({
                 message: "Interests retrieved successfully",
@@ -29,7 +27,6 @@ export const addUserInterest = async (req, res) => {
     const { user_id, interests } = req.body;
 
     try {
-        // Check if the user already has interests
         const existingInterests = await db.query(
             "SELECT * FROM user_interests WHERE user_id = $1",
             [user_id]
@@ -41,7 +38,6 @@ export const addUserInterest = async (req, res) => {
             });
         }
 
-        // Insert new interests for the user
         const insertQuery = `
             INSERT INTO user_interests (user_id, interests)
             VALUES ($1, $2)
@@ -69,7 +65,6 @@ export const getUserIntrestedEvents = async (req, res) => {
     const { user_id } = req.params;
 
     try {
-        // Retrieve events that the user is interested in
         const query = `
             SELECT e.*
             FROM events e

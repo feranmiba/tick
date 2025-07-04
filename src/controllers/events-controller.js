@@ -2,7 +2,13 @@ import db from "../db/db.js";
 import dotenv from "dotenv";
 import multer from "multer";
 import { sendEmail } from "../utils/email-service.js";
+import { generateTicketImage } from "../utils/generateTicketImage.js";
 
+
+
+
+
+  
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -156,7 +162,22 @@ export const attendEvent = async (req, res) => {
 
                 const subject = "THE OWL INITIATORS: Payment Successful";
 
-                await sendEmail(userEmail, text, subject);
+                const ticketImageBuffer = await generateTicketImage({
+                    userName,
+                    eventName,
+                    eventToken,
+                    qrcodeURL,
+                    eventPic
+                  });
+
+                await sendEmail(userEmail, text, subject, [
+                    {
+                      filename: 'ticket.png',
+                      content: ticketImageBuffer,
+                      contentType: 'image/png',
+                      cid: 'ticketImage@owl', 
+                    },
+                  ]);
 
                 return res.status(200).json({ message: "Event attended successfully" });
             } else {
