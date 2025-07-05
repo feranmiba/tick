@@ -127,57 +127,62 @@ export const attendEvent = async (req, res) => {
                 const userName = userNameResult.rows[0].name;
                 const eventName = eventResult.rows[0].event_name;
                 const eventPic = eventResult.rows[0].picture;
-
-                const text = `
+                const eventDate = eventResult.rows[0].date;
+                const eventTime = eventResult.rows[0].time_in;
+                const eventLocation = eventResult.rows[0].event_address;
+                
+                const htmlContent = `
                 <!DOCTYPE html>
                 <html>
                 <head>
-                    <meta charset="UTF-8">
-                    <title>Event Payment Success</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; color: #333; margin: 0; padding: 0; }
-                        h1 { color: #4CAF50; }
-                        img { width: 300px; }
-                        ul { padding-left: 20px; }
-                        li { margin: 5px 0; }
-                    </style>
+                  <meta charset="UTF-8">
+                  <title>Event Payment Success</title>
+                  <style>
+                    body { font-family: Arial, sans-serif; color: #333; margin: 0; padding: 20px; }
+                    h1 { color: #4CAF50; }
+                    img { max-width: 100%; }
+                    ul { padding-left: 20px; }
+                    li { margin: 5px 0; }
+                  </style>
                 </head>
-                <body style="font-family: Arial, sans-serif; color: #333; margin: 0; padding: 0;">
-                    <p>Hello ${userName},</p>
-                    <p>You have successfully paid for the event: <strong>${eventName}</strong>.</p>
-                    <div>
-                           <img src="https://app.swiftjobs.com.ng/${eventPic}" alt="${eventName} Picture" style="width: 300px;"/>
-                    </div>
-                    <ul>
-                        <li>Your Token for the event: ${eventToken}</li>
-                        <li>Your QR code for the event: <a href="${qrcode_url}" style="color: #1a73e8;">${qrcode_url}</a></li>
-                    </ul>
-                    <div>
-                        Thanks for choosing Owl event website.
-                        <h1>Enjoy your event!</h1>
-                    </div>
+                <body>
+                  <p>Hello ${userName},</p>
+                  <p>You have successfully paid for the event: <strong>${eventName}</strong>.</p>
+                  <div>
+                    <img src="https://app.swiftjobs.com.ng/${eventPic}" alt="${eventName} Picture" style="width: 300px;" />
+                  </div>
+                  <ul>
+                    <li>Your Token: ${eventToken}</li>
+                    <li>Your QR Code: <a href="${qrcode_url}" style="color: #1a73e8;">${qrcode_url}</a></li>
+                  </ul>
+                  <h3>Your Ticket:</h3>
+                  <img src="cid:ticketImage@owl" alt="Your Ticket" style="max-width: 400px; border: 1px solid #ccc; border-radius: 8px;" />
+                  <p>Thanks for choosing Owl event website.</p>
+                  <h1>Enjoy your event!</h1>
                 </body>
                 </html>
                 `;
-
-                const subject = "THE OWL INITIATORS: Payment Successful";
-
+                
                 const ticketImageBuffer = await generateTicketImage({
-                    userName,
-                    eventName,
-                    eventToken,
-                    qrcodeURL,
-                    eventPic
-                  });
-
-                await sendEmail(userEmail, text, subject, [
-                    {
-                      filename: 'ticket.png',
-                      content: ticketImageBuffer,
-                      contentType: 'image/png',
-                      cid: 'ticketImage@owl', 
-                    },
-                  ]);
+                  userName,
+                  eventName,
+                  eventToken,
+                  qrcodeURL,
+                  eventPic,
+                  eventDate,
+                  eventTime,
+                  eventLocation
+                });
+                
+                await sendEmail(userEmail, htmlContent, "THE OWL INITIATORS: Payment Successful", [
+                  {
+                    filename: 'ticket.png',
+                    content: ticketImageBuffer,
+                    contentType: 'image/png',
+                    cid: 'ticketImage@owl',
+                  }
+                ]);
+            
 
                 return res.status(200).json({ message: "Event attended successfully" });
             } else {

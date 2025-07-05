@@ -8,7 +8,7 @@ import { sendEmail } from "../utils/email-service.js";
 import { generateRandomCode, generateAccessToken } from "../utils/jwt-service.js";
 
 
-const saltRounds = 12
+const saltRounds = 2
 
 dotenv.config()
 

@@ -8,6 +8,7 @@ import bodyParser from "body-parser"
 import authRoute from "./src/routes/auth-routes.js"
 import profileRoute from "./src/routes/profile-route.js"
 import eventRoute from "./src/routes/event-route.js"
+import userRoute from "./src/routes/user-route.js"
 
 
 
@@ -61,7 +62,8 @@ app.get("/",( req, res ) => {
 app.use("/auth", authRoute)
 app.use("/profile", profileRoute)
 app.use("/event", eventRoute)
+app.use("/user", userRoute)
 
 app.listen(port, () => {
-    console.log(`server is listening on port ${port}`)
+    console.log(`server is listening on port http://localhost:${port}`)
 })
