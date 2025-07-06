@@ -2,8 +2,8 @@ import e from "express";
 import { eventCreation, uploadMiddleware,
 getEvent, attendEvent, getAttendedEvents,
 getAllEvent, getEventCreated, getEventBycategory,
-deleteTicket, verifyToken, DeleteEvent, getAttendee
-} from "../controllers/events-controller.js";
+deleteTicket, verifyToken, DeleteEvent, getAttendee, 
+tableCreation } from "../controllers/events-controller.js";
 
 const router = e.Router()
 
@@ -85,6 +85,9 @@ const router = e.Router()
  *         description: Invalid data provided
  */
 router.post("/event", uploadMiddleware, eventCreation);
+
+
+router.post("/tableCreation", tableCreation)
 
 
 

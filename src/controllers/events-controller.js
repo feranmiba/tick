@@ -51,6 +51,27 @@ export const eventCreation = async  (req, res) => {
     }
 }
 
+export const tableCreation = async (req, res) => {
+    const { event_name, tableName, tablePrice, tableCapacity } = req.body;
+    try {
+        const saveTable = await db.query(
+            "INSERT INTO table_categories (event_name, name, price, capacity) VALUES ($1, $2, $3, $4) RETURNING *",
+            [event_name, tableName, tablePrice, tableCapacity]
+        );
+        if (saveTable) {
+            res.status(200).json({ message: "Table Created", tableInfo: saveTable.rows });
+        } else {
+            res.status(400).json({ message: "Table not created" });
+        }
+    }
+    catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error" });
+    }
+}
+
+
+
 export const DeleteEvent = async (req, res) => {
     const eventId = req.query.eventId; // Ensure eventId is passed in query parameters
     try {
@@ -90,18 +111,31 @@ export const getAllEvent = async (req, res) => {
 }
 export const getEvent = async (req, res) => {
     const eventId = req.query.eventId;
-    try {
-        const getEvent = await db.query("SELECT * FROM eventcreation WHERE id = $1", [ eventId ])
 
-        if(getEvent) {
-            res.status(200).json({event: getEvent.rows})
-            console.log(getEvent)
+    try {
+        const getEvent = await db.query("SELECT * FROM eventcreation WHERE id = $1", [eventId]);
+
+        if (getEvent.rows.length === 0) {
+            return res.status(404).json({ error: "Event not found" });
         }
+
+        const getTable = await db.query(
+            "SELECT * FROM table_categories WHERE event_name = $1",
+            [getEvent.rows[0].event_name]
+        );
+
+        if (getTable.rows.length > 0) {
+            return res.status(200).json({ event: getEvent.rows[0], table: getTable.rows });
+        } else {
+            return res.status(200).json({ event: getEvent.rows[0] });
+        }
+
     } catch (error) {
-        console.error(error)
-        res.status(500).json({error: "Server error"})
+        console.error("Error fetching event:", error);
+        return res.status(500).json({ error: "Server error" });
     }
-}
+};
+
 
 export const attendEvent = async (req, res) => {
     const { userId, eventId, email, qrcodeURL, token, ticketType } = req.body;
