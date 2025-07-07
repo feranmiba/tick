@@ -3,7 +3,7 @@ import { eventCreation, uploadMiddleware,
 getEvent, attendEvent, getAttendedEvents,
 getAllEvent, getEventCreated, getEventBycategory,
 deleteTicket, verifyToken, DeleteEvent, getAttendee, 
-tableCreation } from "../controllers/events-controller.js";
+tableCreation, updateEVent, updateTableCreation } from "../controllers/events-controller.js";
 
 const router = e.Router()
 
@@ -88,6 +88,9 @@ router.post("/event", uploadMiddleware, eventCreation);
 
 
 router.post("/tableCreation", tableCreation)
+
+router.put("/updateEvent", updateEVent)
+router.put("/updateTableCreation", updateTableCreation)
 
 
 

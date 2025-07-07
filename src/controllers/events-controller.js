@@ -88,7 +88,48 @@ export const tableCreation = async (req, res) => {
 
 
 export const updateTableCreation = async (req, res) => {
-}
+    const { tables } = req.body;
+
+    if (!Array.isArray(tables) || tables.length === 0) {
+        return res.status(400).json({ message: "No tables provided for update" });
+    }
+
+    try {
+        const updatedTables = [];
+
+        for (const table of tables) {
+            const { id, tableName, tablePrice, tableCapacity } = table;
+
+            if (!id || !tableName || tablePrice == null || tableCapacity == null) {
+                return res.status(400).json({ message: "Missing fields in one or more tables" });
+            }
+
+            const query = `
+                UPDATE table_categories
+                SET name = $1, price = $2, capacity = $3
+                WHERE id = $4
+                RETURNING *;
+            `;
+
+            const values = [tableName, tablePrice, tableCapacity, id];
+
+            const result = await db.query(query, values);
+            if (result.rowCount > 0) {
+                updatedTables.push(result.rows[0]);
+            }
+        }
+
+        return res.status(200).json({
+            message: `${updatedTables.length} table(s) updated successfully`,
+            updatedTables,
+        });
+
+    } catch (error) {
+        console.error("Error updating tables:", error);
+        return res.status(500).json({ error: "Server error during update" });
+    }
+};
+
 
 
 
