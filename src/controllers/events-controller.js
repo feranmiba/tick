@@ -87,6 +87,9 @@ export const tableCreation = async (req, res) => {
 };
 
 
+export const updateTableCreation = async (req, res) => {
+}
+
 
 
 export const DeleteEvent = async (req, res) => {
@@ -381,6 +384,49 @@ export const getAttendee = async (req, res) => {
     }
 }
 
+
+export const updateEVent = async (req, res) => {
+    const { eventId, brand_name, eventName, eventAddress, timeIn, timeOut, summary, price, category, date, account_name, account_number, bank, vip_price, vvip_price, table_price, vvvip } = req.body;
+    const picture = req.file ? req.file.path : null;
+
+    try {
+        const updateQuery = `
+            UPDATE eventcreation
+            SET brand_name = $1,
+                event_name = $2,
+                event_address = $3,
+                time_in = $4,
+                time_out = $5,
+                summary = $6,
+                picture = $7,
+                price = $8,
+                category = $9,
+                date = $10,
+                account_name = $11,
+                account_number = $12,
+                bank = $13,
+                vip_price = $14,
+                vvip_price = $15,
+                table_price = $16,
+                vvvip = $17
+            WHERE id = $18
+            RETURNING *;
+        `;
+
+        const values = [brand_name, eventName, eventAddress, timeIn, timeOut, summary, picture, price, category, date, account_name, account_number, bank, vip_price, vvip_price, table_price, vvvip, eventId];
+
+        const result = await db.query(updateQuery, values);
+
+        if (result.rows.length > 0) {
+            res.status(200).json({ message: "Event updated successfully", updatedEvent: result.rows[0] });
+        } else {
+            res.status(404).json({ message: "Event not found" });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Server error" });
+    }
+}
 
 export const uploadMiddleware = upload.single('picture')
 
