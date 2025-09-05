@@ -4,12 +4,6 @@ import multer from "multer";
 import { sendEmail } from "../utils/email-service.js";
 import { generateTicketImage } from "../utils/generateTicketImage.js";
 
-
-
-
-
-  
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/');
@@ -130,9 +124,6 @@ export const updateTableCreation = async (req, res) => {
     }
 };
 
-
-
-
 export const DeleteEvent = async (req, res) => {
     const eventId = req.query.eventId; // Ensure eventId is passed in query parameters
     try {
@@ -157,7 +148,6 @@ export const DeleteEvent = async (req, res) => {
 };
 
 
-
 export const getAllEvent = async (req, res) => {
     try {
         const getEvent = await db.query("SELECT * FROM eventcreation")
@@ -170,7 +160,6 @@ export const getAllEvent = async (req, res) => {
         res.status(500).json({error: "Server error"})
     }
 }
-
 
 export const getEvent = async (req, res) => {
     const eventId = req.query.eventId;
@@ -198,7 +187,6 @@ export const getEvent = async (req, res) => {
         return res.status(500).json({ error: "Server error" });
     }
 };
-
 
 export const attendEvent = async (req, res) => {
     const { userId, eventId, email, qrcodeURL, token, ticketType } = req.body;
@@ -468,6 +456,72 @@ export const updateEVent = async (req, res) => {
         res.status(500).json({ error: "Server error" });
     }
 }
+
+
+export const getDashboard = async (req, res) => {
+  const brand_name = String(req.query.brand);
+
+  try {
+    const eventsResult = await db.query(
+      "SELECT id, event_name, date, category, picture, price FROM eventcreation WHERE brand_name = $1",
+      [brand_name]
+    );
+
+    const events = eventsResult.rows;
+
+    if (events.length === 0) {
+      return res.status(404).json({ message: "No events found for this brand" });
+    }
+
+    let totalTickets = 0;
+    let totalRevenue = 0;
+
+  
+    const eventDetails = await Promise.all(
+      events.map(async (event) => {
+        const attendeesResult = await db.query(
+          "SELECT COUNT(*) as attendees, COALESCE(SUM(type_price.price), 0) as revenue " +
+          "FROM user_events ue " +
+          "JOIN ( " +
+          "  SELECT id, price as price, 'default' as type FROM eventcreation " +
+          "  UNION ALL " +
+          "  SELECT id, vip_price as price, 'vip' as type FROM eventcreation " +
+          "  UNION ALL " +
+          "  SELECT id, vvip_price as price, 'vvip' as type FROM eventcreation " +
+          ") type_price ON ue.event_id = type_price.id " +
+          "WHERE ue.event_id = $1",
+          [event.id]
+        );
+
+        const attendees = parseInt(attendeesResult.rows[0]?.attendees || 0);
+        const revenue = parseFloat(attendeesResult.rows[0]?.revenue || 0);
+
+        totalTickets += attendees;
+        totalRevenue += revenue;
+
+        return {
+          ...event,
+          attendees,
+          revenue,
+        };
+      })
+    );
+
+   
+    return res.status(200).json({
+      brand: brand_name,
+      totalEvents: events.length,
+      totalTickets,
+      totalRevenue,
+      events: eventDetails,
+    });
+
+  } catch (error) {
+    console.error("Error fetching dashboard:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 
 export const uploadMiddleware = upload.single('picture')
 

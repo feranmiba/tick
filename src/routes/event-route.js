@@ -3,7 +3,7 @@ import { eventCreation, uploadMiddleware,
 getEvent, attendEvent, getAttendedEvents,
 getAllEvent, getEventCreated, getEventBycategory,
 deleteTicket, verifyToken, DeleteEvent, getAttendee, 
-tableCreation, updateEVent, updateTableCreation } from "../controllers/events-controller.js";
+tableCreation, updateEVent, updateTableCreation, getDashboard } from "../controllers/events-controller.js";
 
 const router = e.Router()
 
@@ -650,5 +650,7 @@ router.delete("/deleteTicket", deleteTicket)
 // getAttendee
 
 router.get("/getAttendee", getAttendee)
+
+router.get("/getDashboard", getDashboard)
 
 export default router;
